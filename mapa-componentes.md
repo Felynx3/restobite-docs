@@ -32,17 +32,18 @@ C4Container
         Container(recaptcha, "reCAPTCHA Enterprise", "API", "Verificación anti-bot")
     }
 
+    System_Ext(googlePlaces, "Google Places API", "Externo a Restobite, sin relación con el proyecto GCP propio")
+
     Rel(usuarioPublico, cloudfront, "HTTPS")
     Rel(cloudfront, nginx, "origin, header X-Origin-Secret")
     Rel(nginx, publicC, "proxy_pass")
     Rel(publicC, backendC, "HTTPS + firma HMAC (server-side)")
 
-    Rel(usuarioAdmin, cloudfront, "HTTPS")
+    Rel(usuarioAdmin, cloudfront, "HTTPS (carga la SPA)")
     Rel(cloudfront, s3, "origin (sitio estático admin)")
-    Rel(usuarioAdmin, backendC, "HTTPS + JWT Bearer (desde el navegador)", "vía CloudFront/api.restobite.com")
-    Rel(usuarioAdmin, recaptcha, "verificación al hacer login", "vía backend")
+    Rel(adminC, backendC, "HTTPS + JWT Bearer, desde el navegador, vía CloudFront/api.restobite.com")
     Rel(adminC, recaptcha, "reCAPTCHA v3 (browser)")
-    Rel(adminC, "google_places", "Google Places API (directo, browser)")
+    Rel(adminC, googlePlaces, "Autocompletado de direcciones (directo, browser)")
 
     Rel(backendC, db, "Prisma")
     Rel(backendC, s3, "Assets: URL prefirmada de subida/lectura")
@@ -61,7 +62,7 @@ C4Container
     Rel(route53, nginx, "A record (origin-*, ci, logs → IP del VPS)")
 ```
 
-`google_places` no es un contenedor propio: representa la llamada directa del navegador (Frontend administrativo) a la API pública de Google Places, sin pasar por el backend.
+`Google Places API` se muestra como sistema externo (no es un componente de Restobite): representa la llamada directa del navegador (Frontend administrativo) a esa API, sin pasar por el backend.
 
 ## Componentes
 
